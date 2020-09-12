@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const config = require("./config/key");
 
 const mongoose = require("mongoose");
+app.use(cors());
 const connect = mongoose
   .connect("mongodb+srv://iashir:Malika22!@senecaweb-org4o.mongodb.net/store", {
     useNewUrlParser: true,
@@ -16,8 +17,6 @@ const connect = mongoose
   })
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err));
-
-app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

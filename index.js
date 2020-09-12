@@ -14,6 +14,8 @@ const connect = mongoose
   .connect("mongodb+srv://iashir:Malika22!@senecaweb-org4o.mongodb.net/store", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
   })
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err));
@@ -21,6 +23,7 @@ const connect = mongoose
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(express.json());
 
 app.use("/api/users", require("./routes/users"));
 app.use("/api/product", require("./routes/product"));

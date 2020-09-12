@@ -2,42 +2,68 @@ const express = require("express");
 const router = express.Router();
 const { Product } = require("../models/Product");
 const multer = require("multer");
-
 const { auth } = require("../middleware/auth");
+const aws = require("aws-sdk");
+const multerS3 = require("multer-s3");
+const path = require("path");
 
-var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
-  },
-  fileFilter: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    if (ext !== ".jpg" || ext !== ".png") {
-      return cb(res.status(400).end("only jpg, png are allowed"), false);
-    }
-    cb(null, true);
-  },
+const s3 = new aws.S3({
+  accessKeyId: "AKIAVFAC4BW6UCTKPB4K",
+  secretAccessKey: "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",
+  Bucket: "ilyasrecipeappbucket",
 });
 
-var upload = multer({ storage: storage }).single("file");
+const ImageUpload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "ilyasrecipeappbucket",
+    acl: "public-read",
+    key: function (req, file, cb) {
+      console.log("key", file);
+      cb(null, `${Date.now()}_${file.originalname}`);
+    },
+  }),
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+}).single("file");
+
+function checkFileType(file, cb) {
+  // Allowed ext
+  const filetypes = /jpeg|jpg|png/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb("Images Only!");
+  }
+}
 
 //=================================
 //             Product
 //=================================
 
 router.post("/uploadImage", auth, (req, res) => {
-  console.log("test", req.body);
-  upload(req, res, (err) => {
+  console.log(req.files);
+  ImageUpload(req, res, (err) => {
+    console.log(req.files);
     if (err) {
+      console.log("err");
       return res.json({ success: false, err });
+    } else if (err instanceof multer.MulterError) {
+      console.log("err multer");
+      return res.json({ success: false, err });
+    } else {
+      console.log("succes");
+      return res.json({
+        success: true,
+        image: req.file.location,
+        fileName: req.file.filename,
+      });
     }
-    return res.json({
-      success: true,
-      image: res.req.file.path,
-      fileName: res.req.file.filename,
-    });
   });
 });
 

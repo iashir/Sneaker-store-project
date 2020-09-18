@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Typography, Button, Form, message, Input, Icon } from "antd";
+import { Typography, Button, Form, Input } from "antd";
 import FileUpload from "../../utils/FileUpload";
 import Axios from "axios";
 import CheckBox from "./sections/CheckBox";
+import notify from "../../utils/toastify";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -47,11 +48,10 @@ function UploadProductPage(props) {
   const [TitleValue, setTitleValue] = useState("");
   const [DescriptionValue, setDescriptionValue] = useState("");
   const [PriceValue, setPriceValue] = useState(0);
-  const [Brand, setBrand] = useState("");
+  const [Brand, setBrand] = useState(Brands[0].value);
   const [Size, SetSize] = useState([]);
-  const [Type, setType] = useState("");
-  const [Gender, setGender] = useState("");
-
+  const [Type, setType] = useState(Types[0].value);
+  const [Gender, setGender] = useState(Genders[0].value);
   const [Images, setImages] = useState([]);
 
   const onTitleChange = (event) => {
@@ -67,11 +67,7 @@ function UploadProductPage(props) {
   };
 
   const handleFilters = (size) => {
-    const arr = [];
-    Sizes.filter((data, i) =>
-      data.key === size[i] ? arr.push(data.value) : null
-    );
-    SetSize(arr);
+    SetSize(size);
   };
 
   const onSelectChange = (event) => {
@@ -106,7 +102,7 @@ function UploadProductPage(props) {
       !Type ||
       !Images
     ) {
-      return alert("fill all the fields first!");
+      return notify("error", "fill all the fields first!");
     }
 
     const variables = {
@@ -123,10 +119,10 @@ function UploadProductPage(props) {
 
     Axios.post("/api/product/uploadProduct", variables).then((response) => {
       if (response.data.success) {
-        alert("Product Successfully Uploaded");
+        notify("success", "Product Successfully Uploaded");
         props.history.push("/");
       } else {
-        alert("Failed to upload Product");
+        notify("error", "Failed to upload Product");
       }
     });
   };
@@ -138,7 +134,6 @@ function UploadProductPage(props) {
       </div>
 
       <Form onSubmit={onSubmit}>
-        {/* DropZone */}
         <FileUpload refreshFunction={updateImages} />
 
         <br />

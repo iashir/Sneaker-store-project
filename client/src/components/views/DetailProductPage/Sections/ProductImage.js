@@ -9,12 +9,12 @@ function ProductImage(props) {
       let images = [];
 
       props.detail.images &&
-        props.detail.images.map((item) => {
+        props.detail.images.map((item) =>
           images.push({
             original: `${item}`,
             thumbnail: `${item}`,
-          });
-        });
+          })
+        );
       setImages(images);
     }
   }, [props.detail]);

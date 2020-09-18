@@ -6,19 +6,18 @@ const { Panel } = Collapse;
 function CheckBox(props) {
   const [Checked, setChecked] = useState([]);
 
-  const handleToggle = (key) => {
-    const currentIndex = Checked.indexOf(key);
+  const handleToggle = (value) => {
+    const currentIndex = Checked.indexOf(value);
     const newChecked = [...Checked];
 
     if (currentIndex === -1) {
-      newChecked.push(key);
+      newChecked.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
     }
 
     setChecked(newChecked);
     props.handleFilters(newChecked);
-    //update this checked information into Parent Component
   };
 
   const renderCheckboxLists = () =>
@@ -26,10 +25,10 @@ function CheckBox(props) {
     props.list.map((value, index) => (
       <React.Fragment key={index}>
         <Checkbox
-          onChange={() => handleToggle(value.key)}
+          onChange={() => handleToggle(value.value)}
           style={{ margin: "0.5rem" }}
           type="checkbox"
-          checked={Checked.indexOf(value.key) === -1 ? false : true}
+          checked={Checked.indexOf(value.value) === -1 ? false : true}
         >
           {value.value}
         </Checkbox>

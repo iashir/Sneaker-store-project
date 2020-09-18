@@ -1,8 +1,7 @@
 import React from "react";
-
+import QuantityIncrease from "./QuantityIncrease";
 function UserCardBlock(props) {
   const renderCartImage = (images) => {
-    console.log(images);
     if (images.length > 0) {
       let image = images[0];
       return image;
@@ -20,7 +19,9 @@ function UserCardBlock(props) {
             src={renderCartImage(product.images)}
           />
         </td>
-        <td>{product.quantity} EA</td>
+        <td>
+          <QuantityIncrease product={product} />
+        </td>
         <td>$ {product.price} </td>
         <td>
           <button onClick={() => props.removeItem(product._id)}>Remove </button>{" "}

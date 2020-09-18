@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Dropzone from "react-dropzone";
 import { Icon } from "antd";
 import Axios from "axios";
+import notify from './toastify';
 function FileUpload(props) {
   const [Images, setImages] = useState([]);
 
@@ -11,16 +12,15 @@ function FileUpload(props) {
       header: { "content-type": "multipart/form-data" },
     };
     formData.append("file", files[0]);
-    //save the Image we chose inside the Node Server
+
     Axios.post("/api/product/uploadImage", formData, config).then(
       (response) => {
         if (response.data.success) {
-          console.log(response.data);
           setImages([...Images, response.data.image]);
           props.refreshFunction([...Images, response.data.image]);
         } else {
           console.log(response.data.err);
-          alert("Failed to save the Image in Server");
+          notify("error","Failed to save the Image in Server");
         }
       }
     );
@@ -51,8 +51,6 @@ function FileUpload(props) {
             }}
             {...getRootProps()}
           >
-            {console.log("getRootProps", { ...getRootProps() })}
-            {console.log("getInputProps", { ...getInputProps() })}
             <input {...getInputProps()} />
             <Icon type="plus" style={{ fontSize: "3rem" }} />
           </div>

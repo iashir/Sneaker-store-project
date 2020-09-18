@@ -6,20 +6,19 @@ const { auth } = require("../middleware/auth");
 const aws = require("aws-sdk");
 const multerS3 = require("multer-s3");
 const path = require("path");
-
+const { accessKeyId, secretAccessKey, Bucket } = require("../config/key");
 const s3 = new aws.S3({
-  accessKeyId: "AKIAVFAC4BW6UCTKPB4K",
-  secretAccessKey: "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",
-  Bucket: "ilyasrecipeappbucket",
+  accessKeyId: accessKeyId,
+  secretAccessKey: secretAccessKey,
+  Bucket: Bucket,
 });
 
 const ImageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "ilyasrecipeappbucket",
+    bucket: Bucket,
     acl: "public-read",
     key: function (req, file, cb) {
-      console.log("key", file);
       cb(null, `${Date.now()}_${file.originalname}`);
     },
   }),
@@ -47,17 +46,12 @@ function checkFileType(file, cb) {
 //=================================
 
 router.post("/uploadImage", auth, (req, res) => {
-  console.log(req.files);
   ImageUpload(req, res, (err) => {
-    console.log(req.files);
     if (err) {
-      console.log("err");
       return res.json({ success: false, err });
     } else if (err instanceof multer.MulterError) {
-      console.log("err multer");
       return res.json({ success: false, err });
     } else {
-      console.log("succes");
       return res.json({
         success: true,
         image: req.file.location,
@@ -68,7 +62,6 @@ router.post("/uploadImage", auth, (req, res) => {
 });
 
 router.post("/uploadProduct", auth, (req, res) => {
-  //save all the data we got from the client into the DB
   const product = new Product(req.body);
 
   product.save((err) => {
@@ -78,7 +71,6 @@ router.post("/uploadProduct", auth, (req, res) => {
 });
 
 router.post("/getProducts", (req, res) => {
-  console.log(req.body);
   let order = req.body.order ? req.body.order : "desc";
   let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
   let limit = req.body.limit ? parseInt(req.body.limit) : 100;
@@ -134,8 +126,6 @@ router.get("/products_by_id", (req, res) => {
   let type = req.query.type;
   let productIds = req.query.id;
 
-  console.log("req.query.id", req.query.id);
-
   if (type === "array") {
     let ids = req.query.id.split(",");
     productIds = [];
@@ -143,10 +133,9 @@ router.get("/products_by_id", (req, res) => {
       return item;
     });
   }
-
-  console.log("productIds", productIds);
-
-  //we need to find the product information that belong to product Id
+  if (type === "single") {
+    Product.findByIdAndUpdate(productIds, { $inc: { views: 1 } }).exec();
+  }
   Product.find({ _id: { $in: productIds } })
     .populate("writer")
     .exec((err, product) => {

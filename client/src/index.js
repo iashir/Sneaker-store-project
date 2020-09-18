@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./components/App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter } from "react-router-dom";
+import { CookiesProvider } from "react-cookie";
 
 import Reducer from "./_reducers";
 import { Provider } from "react-redux";
@@ -24,9 +25,11 @@ ReactDOM.render(
         window.__REDUX_DEVTOOLS_EXTENSION__()
     )}
   >
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <CookiesProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </CookiesProvider>
   </Provider>,
   document.getElementById("root")
 );

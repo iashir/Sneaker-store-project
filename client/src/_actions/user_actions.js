@@ -9,7 +9,7 @@ import {
   REMOVE_CART_ITEM_USER,
   ON_SUCCESS_BUY_USER,
 } from "./types";
-import { USER_SERVER } from "../components/Config.js";
+import { USER_SERVER } from "../components/Config";
 
 export function registerUser(dataToSubmit) {
   const request = axios
@@ -55,9 +55,9 @@ export function logoutUser() {
   };
 }
 
-export function addToCart(_id) {
+export function addToCart(_id, quantity = null) {
   const request = axios
-    .get(`${USER_SERVER}/addToCart?productId=${_id}`)
+    .get(`${USER_SERVER}/addToCart?productId=${_id}&quantity=${quantity}`)
     .then((response) => response.data);
 
   return {
@@ -70,9 +70,6 @@ export function getCartItems(cartItems, userCart) {
   const request = axios
     .get(`/api/product/products_by_id?id=${cartItems}&type=array`)
     .then((response) => {
-      //Make CartDetail inside Redux Store
-      // We need to add quantity data to Product Information that come from Product Collection.
-
       userCart.forEach((cartItem) => {
         response.data.forEach((productDetail, i) => {
           if (cartItem.id === productDetail._id) {

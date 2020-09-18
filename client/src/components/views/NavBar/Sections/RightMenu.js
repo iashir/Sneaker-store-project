@@ -1,21 +1,24 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Fragment } from "react";
+import React from "react";
 import { Menu, Icon, Badge } from "antd";
 import axios from "axios";
 import { USER_SERVER } from "../../../Config";
 import { withRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useCookies } from "react-cookie";
+import notify from "../../../utils/toastify";
 
 function RightMenu(props) {
+  const [cookies, setCookie, removeCookie] = useCookies(["w_auth"]);
   const user = useSelector((state) => state.user);
-  console.log(user);
 
   const logoutHandler = () => {
     axios.get(`${USER_SERVER}/logout`).then((response) => {
       if (response.status === 200) {
+        removeCookie("w_auth");
         props.history.push("/login");
       } else {
-        alert("Log Out Failed");
+        notify("error", "Log Out Failed");
       }
     });
   };
@@ -63,14 +66,13 @@ function RightMenu(props) {
           <a href="/user/cart">
             <Badge count={user.userData && user.userData.cart.length}>
               <Icon type="shopping-cart" style={{ fontSize: 20 }} />
-              Cart
             </Badge>
+            Cart
           </a>
         </Menu.Item>
 
         <Menu.Item key="logout">
           <a onClick={logoutHandler}>
-            {" "}
             <Icon type="logout" />
             Logout
           </a>

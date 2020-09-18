@@ -14,20 +14,26 @@ function ProductInfo(props) {
 
   return (
     <div>
-      <Descriptions title="Product Info">
-        <Descriptions.Item label="Price"> {Product.price}</Descriptions.Item>
+      <Descriptions style={{ textAlign: "center" }} title="Product Info">
+        <Descriptions.Item label="Price">
+          {`$${Product.price}`}
+        </Descriptions.Item>
         <Descriptions.Item label="Brand"> {Product.brand}</Descriptions.Item>
         <Descriptions.Item label="Type"> {Product.type}</Descriptions.Item>
+        <Descriptions.Item label="Gender"> {Product.gender}</Descriptions.Item>
+        <Descriptions.Item label="Sold">{Product.sold}</Descriptions.Item>
+        <Descriptions.Item label="Views"> {Product.views}</Descriptions.Item>
         <Descriptions.Item label="Size">
           {Product.size ? Product.size.map((data) => `${data} | `) : null}
         </Descriptions.Item>
-        <Descriptions.Item label="Price"> {Product.gender}</Descriptions.Item>
-        <Descriptions.Item label="Sold">{Product.sold}</Descriptions.Item>
-        <Descriptions.Item label="View"> {Product.views}</Descriptions.Item>
-        <Descriptions.Item label="Description">
-          {Product.description}
-        </Descriptions.Item>
       </Descriptions>
+      <div>
+        <br />
+        <p style={{ textAlign: "center", fontWeight: "bold" }}>
+          About this product
+        </p>
+        <p> {Product.description}</p>
+      </div>
 
       <br />
       <br />

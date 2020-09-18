@@ -33,6 +33,7 @@ router.post("/register", (req, res) => {
     if (err) return res.json({ success: false, err });
     return res.status(200).json({
       success: true,
+      email: doc.email,
     });
   });
 });
@@ -51,7 +52,6 @@ router.post("/login", (req, res) => {
 
       user.generateToken((err, user) => {
         if (err) return res.status(400).send(err);
-        res.cookie("w_authExp", user.tokenExp);
         res.cookie("w_auth", user.token).status(200).json({
           loginSuccess: true,
           userId: user._id,
@@ -78,8 +78,6 @@ router.get("/addToCart", auth, (req, res) => {
   User.findOne({ _id: req.user._id }, (err, userInfo) => {
     let duplicate = false;
 
-    console.log(userInfo);
-
     userInfo.cart.forEach((item) => {
       if (item.id == req.query.productId) {
         duplicate = true;
@@ -87,9 +85,13 @@ router.get("/addToCart", auth, (req, res) => {
     });
 
     if (duplicate) {
+      const quantity =
+        req.query.quantity !== "null"
+          ? { "cart.$.quantity": parseInt(req.query.quantity) }
+          : {};
       User.findOneAndUpdate(
         { _id: req.user._id, "cart.id": req.query.productId },
-        { $inc: { "cart.$.quantity": 1 } },
+        quantity,
         { new: true },
         (err, userInfo) => {
           if (err) return res.json({ success: false, err });
@@ -199,7 +201,7 @@ router.post("/successBuy", auth, (req, res) => {
 
         //3. Increase the amount of number for the sold information
 
-        //first We need to know how many product were sold in this transaction for
+        //how many product were sold in this transaction for
         // each of products
 
         let products = [];

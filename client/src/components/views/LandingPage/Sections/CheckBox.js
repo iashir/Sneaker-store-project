@@ -20,7 +20,6 @@ function CheckBox(props) {
 
     setChecked(newChecked);
     props.handleFilters(newChecked);
-    //update this checked information into Parent Component
   };
 
   const renderCheckboxLists = () =>

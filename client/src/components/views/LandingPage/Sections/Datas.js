@@ -31,37 +31,6 @@ const price = [
   },
 ];
 
-const continents = [
-  {
-    _id: 1,
-    name: "Africa",
-  },
-  {
-    _id: 2,
-    name: "Europe",
-  },
-  {
-    _id: 3,
-    name: "Asia",
-  },
-  {
-    _id: 4,
-    name: "North America",
-  },
-  {
-    _id: 5,
-    name: "South America",
-  },
-  {
-    _id: 6,
-    name: "Australia",
-  },
-  {
-    _id: 7,
-    name: "Antarctica",
-  },
-];
-
 const Brands = [
   { _id: 1, name: "Nike" },
   { _id: 2, name: "Adidas" },
@@ -98,4 +67,4 @@ const Genders = [
   { _id: 3, name: "Unisex" },
 ];
 
-export { price, continents, Types, Genders, Sizes, Brands };
+export { price, Types, Genders, Sizes, Brands };

@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Axios from "axios";
-import { Icon, Col, Card, Row, Divider, Button } from "antd";
+import { Col, Card, Row, Button } from "antd";
 import ImageSlider from "../../utils/ImageSlider";
 import CheckBox from "./Sections/CheckBox";
 import RadioBox from "./Sections/RadioBox";
-import {
-  continents,
-  price,
-  Types,
-  Genders,
-  Sizes,
-  Brands,
-} from "./Sections/Datas";
+import { price, Types, Genders, Brands } from "./Sections/Datas";
 import SearchFeature from "./Sections/SearchFeature";
-
+import notify from "../../utils/toastify";
 const { Meta } = Card;
 
 function LandingPage() {
   const [Products, setProducts] = useState([]);
   const [Skip, setSkip] = useState(0);
   const [reset, setReset] = useState(false);
-  const [Limit, setLimit] = useState(8);
+  const [loading, setLoading] = useState(true);
+  const [Limit] = useState(8);
   const [PostSize, setPostSize] = useState();
   const [SearchTerms, setSearchTerms] = useState("");
 
@@ -38,12 +32,12 @@ function LandingPage() {
     };
 
     getProducts(variables);
-  }, []);
+  }, [Limit,Skip]);
 
   const getProducts = (variables) => {
-    console.log(variables);
     Axios.post("/api/product/getProducts", variables).then((response) => {
       if (response.data.success) {
+        setLoading(false);
         if (variables.loadMore) {
           setProducts([...Products, ...response.data.products]);
         } else {
@@ -51,7 +45,8 @@ function LandingPage() {
         }
         setPostSize(response.data.postSize);
       } else {
-        alert("Failed to fectch product datas");
+        setLoading(false);
+        notify("error", "Failed to connects");
       }
     });
   };
@@ -72,24 +67,16 @@ function LandingPage() {
 
   const renderCards = Products.map((product, index) => {
     return (
-      <Col lg={6} md={8} sm={8} xs={24}>
-        <Card
-          hoverable={true}
-          cover={
-            <a href={`/product/${product._id}`}>
-              <ImageSlider images={product.images} />
-            </a>
-          }
-        >
-          <Meta
-            title={product.title}
-            description={`Price: $${product.price} `}
-          />
-          <Meta description={`Type: ${product.type}`} />
-          <Meta description={`Gender: ${product.gender}`} />
-          <Meta description={`Brand: ${product.brand}`} />
-          <Meta description={`Sizes: ${product.size.map((data) => data)}`} />
-        </Card>
+      <Col key={product._id} lg={6} md={8} sm={12} xs={24}>
+        <a href={`/product/${product._id}`}>
+          <Card
+            bordered={false}
+            hoverable={true}
+            cover={<ImageSlider images={product.images} />}
+          >
+            <Meta title={product.title} description={`$${product.price} `} />
+          </Card>
+        </a>
       </Col>
     );
   });
@@ -113,13 +100,11 @@ function LandingPage() {
         array = data[key].array;
       }
     }
-    console.log("array", array);
     return array;
   };
 
   const handleFilters = (filters, category) => {
     const newFilters = { ...Filters };
-    const arr = [];
 
     if (category === "price") {
       newFilters[category] = filters;
@@ -131,8 +116,6 @@ function LandingPage() {
       let priceValues = handlePrice(filters);
       newFilters[category] = priceValues;
     }
-
-    console.log(newFilters);
 
     showFilteredResults(newFilters);
     setFilters(newFilters);
@@ -219,7 +202,7 @@ function LandingPage() {
           />
         </div>
 
-        {Products.length === 0 ? (
+        {Products.length === 0 && loading ? (
           <div
             style={{
               display: "flex",
@@ -228,7 +211,18 @@ function LandingPage() {
               alignItems: "center",
             }}
           >
-            <h2>No post yet...</h2>
+            <h2>Loading...</h2>
+          </div>
+        ) : Products.length === 0 && !loading ? (
+          <div
+            style={{
+              display: "flex",
+              height: "300px",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <h2>No posts yet...</h2>
           </div>
         ) : (
           <div>

@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Fragment } from "react";
 import { Route, Switch } from "react-router-dom";
 import Auth from "../hoc/auth";
 // pages for this product
@@ -11,10 +11,12 @@ import UploadProductPage from "./views/UploadProductPage/UploadProductPage";
 import DetailProductPage from "./views/DetailProductPage/DetailProductPage";
 import CartPage from "./views/CartPage/CartPage";
 import HistoryPage from "./views/HistoryPage/HistoryPage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Fragment>
       <NavBar />
       <div style={{ paddingTop: "75px", minHeight: "calc(100vh - 80px)" }}>
         <Switch>
@@ -36,7 +38,8 @@ function App() {
         </Switch>
       </div>
       <Footer />
-    </Suspense>
+      <ToastContainer />
+    </Fragment>
   );
 }
 

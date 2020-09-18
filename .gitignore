@@ -10,6 +10,8 @@
 /build
 
 #key variables
+/config
+/client/src/Config.js
 key.js
 Config.js
 
